@@ -169,7 +169,9 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\ApplicationController.cs" />
     <Compile Include="Controllers\ApplicationFileController.cs" />
+    <Compile Include="Controllers\FeedBackController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MessageController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\PayedImageController.cs" />
     <Compile Include="Controllers\ProgramController.cs" />
@@ -185,6 +187,8 @@
     <Compile Include="Models\Admin.cs" />
     <Compile Include="Models\Application.cs" />
     <Compile Include="Models\Application_File.cs" />
+    <Compile Include="Models\FeedBack.cs" />
+    <Compile Include="Models\Message.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\Payed_Image.cs" />
     <Compile Include="Models\Program.cs" />
