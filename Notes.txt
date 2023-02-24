@@ -1,0 +1,186 @@
+{
+    "UNV_Image":"صوره",
+    "UNV_BG_Image":"خلفية",
+    "UNV_Overview":"وجهة نظر",
+    "UNV_Name":"جامعة",
+    "UNV_City":"مدينة",
+    "UNV_Found_in":1888,
+    "UNV_UNVT_ID":1,
+    "UNV_NoOfTotalStudents":100000,
+    "UNV_NoOfInternationalStudents":20000,
+    "UNV_NoOfFaculty":36,
+    "UNV_About":"عن",
+    "UNV_ScholarShip_Rank":15,
+    "UNV_World_Rank":150,
+    "UNV_ARWU_Rank":20,
+    "UNV_Advantages":"مميزات"
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+{
+    "PRG_Image":"صورة البرنامج",
+    "PRG_Name":"الاسم الخاص بالبرنامج",
+    "PRG_SST_ID":"2",
+    "PRG_Old_Price":40000,
+    "PRG_New_Price":0,
+    "PRG_Intake":"Spring",
+    "PRG_Year":2030,
+    "PRG_Degree":"Master",
+    "PRG_Teaching_Languages":"Arabic",
+    "PRG_Field":"Medical Record",
+    "PRG_Expired_date":"2025-3-5",
+    "PRG_Duration":3.5,
+    "PRG_Policy":"policy",
+    "PRG_Requerments":"req",
+    "PRG_Special_Notes":"s notes",
+    "PRG_UNV_ID":1
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+{
+    "PDOC_Field":"test 1111",
+    "PDOC_PRG_ID":10029
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+{
+    "PFS_FeeStructure":"TEST FEE",
+    "PFS_Price":1000,
+    "PFS_PRG_ID":10029
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+{
+    "ADM_Username":"hassan",
+    "ADM_Password":"123"
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+{
+    "USR_Username": "test",
+    "USR_City": "Cairo tttt",
+    "USR_Email": "User1@gmail.com tttt",
+    "USR_Password": "123",
+    "USR_Nationality": "Egypt ttttttt",
+    "USR_Phone": "01254856921",
+    "USR_ROL_ID": 1
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+{
+    "STD_SurName":"hamza",
+    "STD_GivenName":"ashry",
+    "STD_Nationality":"egyption",
+    "STD_DOB":"5/10/2000",
+    "STD_Gender":0,
+    "STD_PassportNo":"123456789",
+    "STD_SocialState":0,
+    "STD_PassportExDate":"5/12/2027",
+    "STD_Religion":"muslim",
+    "STD_Language":"arabic",
+    "STD_Eduction":"bachelor",
+    "STD_Email":"hamza@gmail.com",
+    "STD_Phone":"01212601762",
+    "STD_WhatsAppNo":"01212601762",
+    "STD_PlaceOfBirth":"SA",
+    "STD_Occupation":"bachelor",
+    "STD_Address":"BNS",
+    "STD_InChinaNow":0,
+    "STD_StudyInChine":0,
+    "STD_PassportPhoto":"",
+    "STD_PassportIDPhoto":"",
+    "STD_AcadimicTransctiptPhoto":"",
+    "STD_HieghestEduPhoto":"",
+    "STD_BankStatmentPhoto":"",
+    "STD_ForeignerExam":"",
+    "STD_NoCrimimalRecord":"",
+    "STD_AppForm":"",
+    "STD_UniversityAppForm":"",
+    "STD_USR_ID":1
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+SqlConnection connection = new SqlConnection(connectionString)
+
+    connection.Open();
+    string query = "EXEC sp_executesql @sql, N'@PRG_Image nvarchar(max), @PRG_Name nvarchar(50), @PRG_SST_ID tinyint, @PRG_Old_Price decimal(9, 2), @PRG_New_Price decimal(9, 2), @PRG_Intake nvarchar(12), @PRG_Degree nvarchar(100), @PRG_Teaching_Languages nvarchar(50), @PRG_Field nvarchar(30), @PRG_Expired_date date, @PRG_Duration decimal(3, 1), @PRG_Policy nvarchar(max), @PRG_Requerments nvarchar(max), @PRG_Special_Notes nvarchar(max), @PRG_UNV_ID bigint', @PRG_Image, @PRG_Name, @PRG_SST_ID, @PRG_Old_Price, @PRG_New_Price, @PRG_Intake, @PRG_Degree, @PRG_Teaching_Languages, @PRG_Field, @PRG_Expired_date, @PRG_Duration, @PRG_Policy, @PRG_Requerments, @PRG_Special_Notes, @PRG_UNV_ID";
+    SqlCommand command = new SqlCommand(query , connection)
+    
+        command.Parameters.AddWithValue("@sql", "EXEC Insert_Program @PRG_Image, @PRG_Name, @PRG_SST_ID, @PRG_Old_Price, @PRG_New_Price, @PRG_Intake, @PRG_Degree, @PRG_Teaching_Languages, @PRG_Field, @PRG_Expired_date, @PRG_Duration, @PRG_Policy, @PRG_Requerments, @PRG_Special_Notes, @PRG_UNV_ID");
+        command.Parameters.AddWithValue("@PRG_Image", "SomeValue1");
+        command.Parameters.AddWithValue("@PRG_Name", "SomeValue2");
+        command.Parameters.AddWithValue("@PRG_SST_ID", 1);
+        command.Parameters.AddWithValue("@PRG_Old_Price", 10.5);
+        command.Parameters.AddWithValue("@PRG_New_Price", 20.5);
+        command.Parameters.AddWithValue("@PRG_Intake", "SomeValue3");
+        command.Parameters.AddWithValue("@PRG_Degree", "SomeValue4");
+        command.Parameters.AddWithValue("@PRG_Teaching_Languages", "SomeValue5");
+        command.Parameters.AddWithValue("@PRG_Field", "SomeValue6");
+        command.Parameters.AddWithValue("@PRG_Expired_date", DateTime.Now);
+        command.Parameters.AddWithValue("@PRG_Duration", 1.5);
+        command.Parameters.AddWithValue("@PRG_Policy", "SomeValue7");
+        command.Parameters.AddWithValue("@PRG_Requerments", "SomeValue8");
+        command.Parameters.AddWithValue("@PRG_Special_Notes", "SomeValue9");
+        command.Parameters.AddWithValue("@PRG_UNV_ID", 2);
+        SqlDataReader reader = command.ExecuteReader()
+        
+            while (reader.Read())
+            {
+                // Process data here
+            }
+        
+    
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Make procedure faster:
+
+CREATE NONCLUSTERED INDEX IX_MyTable_MyColumn
+ON MyTable(MyColumn);
+
+CREATE PROCEDURE MyProcedure
+    @Param1 INT,
+    @Param2 VARCHAR(50)
+AS
+BEGIN
+    -- Use an index to speed up the query
+    SELECT *
+    FROM MyTable WITH(INDEX(IX_MyTable_MyColumn))
+    WHERE MyOtherColumn = @Param1
+    AND MyColumn2 = @Param2;
+END
+
+CREATE PROCEDURE MyProcedure
+    @Param1 INT,
+    @Param2 VARCHAR(50)
+AS
+BEGIN
+    -- Use query hints to optimize the query
+    SELECT *
+    FROM MyTable
+    WHERE MyOtherColumn = @Param1
+    AND MyColumn2 = @Param2
+    OPTION (RECOMPILE); -- Recompile the query to get a fresh execution plan each time it is run
+END
+
+using (SqlConnection connection = new SqlConnection(connectionString))
+{
+    connection.Open();
+    string sql = "EXEC MyProcedure @Param1, @Param2";
+    using (SqlCommand command = new SqlCommand(sql, connection))
+    {
+        command.Parameters.AddWithValue("@Param1", 1);
+        command.Parameters.AddWithValue("@Param2", "SomeValue");
+        using (SqlDataReader reader = command.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                // Process data here
+            }
+        }
+    }
+}
+
+
+Cache query plans:
+You can use the WITH RECOMPILE option with sp_executesql to force SQL Server to recompile the query plan each time it is executed. This can be useful if the query is only executed once or if the query parameters change frequently. For example:
+
+sql
+Copy code
+DECLARE @sql NVARCHAR(MAX) = N'SELECT * FROM Orders WHERE CustomerId = @customerId AND OrderDate >= @startDate'
+
+EXEC sp_executesql @sql, N'@customerId INT, @startDate DATE', @customerId = 1234, @startDate = '2022-01-01', WITH RECOMPILE
