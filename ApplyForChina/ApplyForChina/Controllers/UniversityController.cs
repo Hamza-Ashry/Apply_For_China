@@ -62,12 +62,12 @@ namespace ApplyForChina.Controllers
         }
 
         [HttpGet]
-        public async Task<HttpResponseMessage> Get_University_Total()
+        public async Task<HttpResponseMessage> Get_Universities_Total()
         {
             try
             {
                 IEnumerable<int> total =
-                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Get_University_Total", commandType: CommandType.StoredProcedure);
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Get_Universities_Total", commandType: CommandType.StoredProcedure);
 
                 if (total.Count() == 0)
                     return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
