@@ -205,7 +205,7 @@ namespace ApplyForChina.Controllers
                 IEnumerable<int> p =
                     await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Insert_Program", Parameters, commandType: CommandType.StoredProcedure);
 
-                return Request.CreateResponse(HttpStatusCode.OK, Messages.Inserted_Successfully("Program"));
+                return Request.CreateResponse(HttpStatusCode.OK, Messages.Inserted_Successfully("Program", p.First()));
             }
             catch (Exception ex)
             {

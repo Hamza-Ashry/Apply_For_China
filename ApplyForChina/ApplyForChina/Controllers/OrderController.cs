@@ -1,11 +1,14 @@
 ﻿using ApplyForChina.Attributes;
 using ApplyForChina.Models;
+using Dapper;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Cors;
 
@@ -15,139 +18,102 @@ namespace ApplyForChina.Controllers
     public class OrderController : ApiController
     {
         [HttpGet]
-        public HttpResponseMessage Get_Agent_Orders([FromUri] int ORD_USR_ID)
+        public async Task<HttpResponseMessage> Get_Agent_Orders([FromUri] int ORD_USR_ID, [FromUri] int Page_Number, [FromUri] int Limit)
         {
-            List<Order> ord = new List<Order>();
-
-            SqlConnection conn = new SqlConnection(ConnectionString.ConStr());
-            string query = "EXEC sp_executesql @sql, N'@ORD_USR_ID INT', @ORD_USR_ID";
-            SqlCommand comm = new SqlCommand(query, conn);
-
-            comm.Parameters.AddWithValue("@sql", "EXEC Get_Agent_Orders @ORD_USR_ID");
-            comm.Parameters.AddWithValue("@ORD_USR_ID", ORD_USR_ID);
-
-            conn.Open();
             try
             {
-                SqlDataReader reader = comm.ExecuteReader();
-                while (reader.Read())
-                {
-                    ord.Add(new Order()
-                    {
-                         ORD_ID = long.Parse(reader[0].ToString()),
-                         ORD_Code = reader[1].ToString(),
-                         ORD_Date = DateTime.Parse(reader[2].ToString()),
-                         ORD_State = reader[3].ToString(),
-                         ORD_STD_ID = long.Parse(reader[4].ToString()),
-                         ORD_USR_ID = int.Parse(reader[5].ToString())
-                    });
-                }
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@ORD_USR_ID", ORD_USR_ID);
+                Parameters.Add("@Page_Number", Page_Number);
+                Parameters.Add("@Limit", Limit);
 
-                if (ord.Count == 0)
+                IEnumerable<Order> ord =
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<Order>("Get_Agent_Orders", Parameters, commandType: CommandType.StoredProcedure);
+
+                if (ord.Count() == 0)
                     return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
                 return Request.CreateResponse(HttpStatusCode.OK, ord);
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
-            }
-            finally
-            {
-                conn.Close();
             }
         }
 
         [HttpGet]
-        public HttpResponseMessage Get_Order([FromUri] long ORD_ID)
+        public async Task<HttpResponseMessage> Get_Order([FromUri] long ORD_ID)
         {
-            Order ord = null;
-
-            SqlConnection conn = new SqlConnection(ConnectionString.ConStr());
-            string query = "EXEC sp_executesql @sql, N'@ORD_ID BIGINT', @ORD_ID";
-            SqlCommand comm = new SqlCommand(query, conn);
-
-            comm.Parameters.AddWithValue("@sql", "EXEC Get_Order @ORD_ID");
-            comm.Parameters.AddWithValue("@ORD_ID", ORD_ID);
-
-            conn.Open();
             try
             {
-                SqlDataReader reader = comm.ExecuteReader();
-                while (reader.Read())
-                {
-                    ord = new Order()
-                    {
-                        ORD_ID = long.Parse(reader[0].ToString()),
-                        ORD_Code = reader[1].ToString(),
-                        ORD_Date = DateTime.Parse(reader[2].ToString()),
-                        ORD_State = reader[3].ToString(),
-                        ORD_STD_ID = long.Parse(reader[4].ToString()),
-                        ORD_USR_ID = int.Parse(reader[5].ToString())
-                    };
-                }
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@ORD_ID", ORD_ID);
 
-                if (ord == null)
+                IEnumerable<Order> ord =
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<Order>("Get_Order", Parameters, commandType: CommandType.StoredProcedure);
+
+                if (ord.Count() == 0)
                     return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
-                return Request.CreateResponse(HttpStatusCode.OK, ord);
+                return Request.CreateResponse(HttpStatusCode.OK, ord.First());
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
             }
-            finally
+        }
+
+        [HttpGet]
+        public async Task<HttpResponseMessage> Get_Agent_Orders_Total([FromUri] int ORD_USR_ID)
+        {
+            try
             {
-                conn.Close();
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@ORD_USR_ID", ORD_USR_ID);
+
+                IEnumerable<int> ord =
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Get_Agent_Orders_Total", Parameters, commandType: CommandType.StoredProcedure);
+
+                if (ord.Count() == 0)
+                    return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
+                return Request.CreateResponse(HttpStatusCode.OK, ord.First());
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
             }
         }
 
         [HttpPost]
-        public HttpResponseMessage Insert_Order([FromBody] Order ord)
+        public async Task<HttpResponseMessage> Insert_Order([FromBody] Order ord)
         {
-            long o = 0;
-
-            SqlConnection conn = new SqlConnection(ConnectionString.ConStr());
-            string query = "EXEC sp_executesql @sql, N'@ORD_STD_ID BIGINT, @ORD_USR_ID INT', @ORD_STD_ID, @ORD_USR_ID";
-            SqlCommand comm = new SqlCommand(query, conn);
-
-            comm.Parameters.AddWithValue("@sql", "EXEC Insert_Order @ORD_STD_ID, @ORD_USR_ID");
-            comm.Parameters.AddWithValue("@ORD_STD_ID", ord.ORD_STD_ID);
-            comm.Parameters.AddWithValue("@ORD_USR_ID", ord.ORD_USR_ID);
-
-            conn.Open();
             try
             {
-                o = long.Parse(comm.ExecuteScalar().ToString());
-                
-                return Request.CreateResponse(HttpStatusCode.OK, Messages.Inserted_Successfully("Order", o));
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@ORD_STD_ID", ord.ORD_STD_ID);
+                Parameters.Add("@ORD_USR_ID", ord.ORD_USR_ID);
+
+                IEnumerable<int> o =
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Insert_Order", Parameters, commandType: CommandType.StoredProcedure);
+
+                return Request.CreateResponse(HttpStatusCode.OK, Messages.Inserted_Successfully("Order", o.First()));
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
             }
-            finally
-            {
-                conn.Close();
-            }
         }
 
         [HttpPut]
-        public HttpResponseMessage Update_Order([FromUri] long ORD_ID, [FromBody] Order ord)
+        public async Task<HttpResponseMessage> Update_Order([FromUri] long ORD_ID, [FromBody] Order ord)
         {
-            int o = 0;
-
-            SqlConnection conn = new SqlConnection(ConnectionString.ConStr());
-            string query = "EXEC sp_executesql @sql, N'@ORD_ID BIGINT, @ORD_STD_ID BIGINT, @ORD_USR_ID INT', @ORD_ID, @ORD_STD_ID, @ORD_USR_ID";
-            SqlCommand comm = new SqlCommand(query, conn);
-
-            comm.Parameters.AddWithValue("@sql", "EXEC Update_Order @ORD_ID, @ORD_STD_ID, @ORD_USR_ID");
-            comm.Parameters.AddWithValue("@ORD_ID", ORD_ID);
-            comm.Parameters.AddWithValue("@ORD_STD_ID", ord.ORD_STD_ID);
-            comm.Parameters.AddWithValue("@ORD_USR_ID", ord.ORD_USR_ID);
-
-            conn.Open();
             try
             {
-                o = comm.ExecuteNonQuery();
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@ORD_ID", ORD_ID);
+                Parameters.Add("@ORD_STD_ID", ord.ORD_STD_ID);
+                Parameters.Add("@ORD_USR_ID", ord.ORD_USR_ID);
+
+                IEnumerable<int> o =
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Update_Order", Parameters, commandType: CommandType.StoredProcedure);
 
                 return Request.CreateResponse(HttpStatusCode.OK, Messages.Updated_Successfully("Order"));
             }
@@ -155,38 +121,24 @@ namespace ApplyForChina.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
             }
-            finally
-            {
-                conn.Close();
-            }
         }
 
         [HttpDelete]
-        public HttpResponseMessage Delete_Order([FromUri] long ORD_ID)
+        public async Task<HttpResponseMessage> Delete_Order([FromUri] long ORD_ID)
         {
-            int o = 0;
-
-            SqlConnection conn = new SqlConnection(ConnectionString.ConStr());
-            string query = "EXEC sp_executesql @sql, N'@ORD_ID BIGINT', @ORD_ID";
-            SqlCommand comm = new SqlCommand(query, conn);
-
-            comm.Parameters.AddWithValue("@sql", "EXEC Delete_Order @ORD_ID");
-            comm.Parameters.AddWithValue("@ORD_ID", ORD_ID);
-
-            conn.Open();
             try
             {
-                o = comm.ExecuteNonQuery();
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@ORD_ID", ORD_ID);
+
+                IEnumerable<int> o =
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Delete_Order", Parameters, commandType: CommandType.StoredProcedure);
 
                 return Request.CreateResponse(HttpStatusCode.OK, Messages.Deleted_Successfully("Order"));
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
-            }
-            finally
-            {
-                conn.Close();
             }
         }
     }   

@@ -53,7 +53,7 @@ namespace ApplyForChina.Controllers
 
                 if (unv.Count() == 0)
                     return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
-                return Request.CreateResponse(HttpStatusCode.OK, unv);
+                return Request.CreateResponse(HttpStatusCode.OK, unv.First());
             }
             catch (Exception ex)
             {

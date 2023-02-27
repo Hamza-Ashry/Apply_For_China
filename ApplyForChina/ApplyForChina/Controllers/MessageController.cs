@@ -18,52 +18,60 @@ namespace ApplyForChina.Controllers
     public class MessageController : ApiController
     {
         [HttpGet]
-        public async Task<HttpResponseMessage> Get_All_Agent_Messages([FromUri] int USR_ID)
+        public async Task<HttpResponseMessage> Get_All_Agent_Messages([FromUri] int USR_ID, [FromUri] int Page_Number, [FromUri] int Limit)
         {
-            using (SqlConnection conn = new SqlConnection(ConnectionString.ConStr()))
+            try
             {
-                await conn.OpenAsync();
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@USR_ID", USR_ID);
+                Parameters.Add("@Page_Number", Page_Number);
+                Parameters.Add("@Limit", Limit);
 
-                try
-                {
-                    var Parameters = new DynamicParameters();
-                    Parameters.Add("@USR_ID", USR_ID);
+                IEnumerable<Message> msg = await SingletonSqlConnection.Instance.Connection.QueryAsync<Message>("Get_All_Agent_Messages", Parameters, commandType: CommandType.StoredProcedure);
 
-                    IEnumerable<Message> msg = await conn.QueryAsync<Message>("Get_All_Agent_Messages", Parameters, commandType: CommandType.StoredProcedure);
+                if (msg.Count() == 0)
+                    return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
+                return Request.CreateResponse(HttpStatusCode.OK, msg);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
+            }
+        }
 
-                    if (msg.Count() == 0)
-                        return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
-                    return Request.CreateResponse(HttpStatusCode.OK, msg);
-                }
-                catch (Exception ex)
-                {
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
-                }
-                finally
-                {
-                    conn.Close();
-                }
+        [HttpGet]
+        public async Task<HttpResponseMessage> Get_All_Agent_Messages_Total([FromUri] int USR_ID)
+        {
+            try
+            {
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@USR_ID", USR_ID);
+
+                IEnumerable<int> msg =
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Get_All_Agent_Messages_Total", Parameters, commandType: CommandType.StoredProcedure);
+
+                if (msg.Count() == 0)
+                    return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
+                return Request.CreateResponse(HttpStatusCode.OK, msg.First());
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
             }
         }
 
         [HttpPost]
-        public HttpResponseMessage Insert_Message([FromBody] Message msg)
+        public async Task<HttpResponseMessage> Insert_Message([FromBody] Message msg)
         {
-            int m = 0;
-
-            SqlConnection conn = new SqlConnection(ConnectionString.ConStr());
-            string query = "EXEC sp_executesql @sql, N'@MSG_Message NVARCHAR(MAX), @MSG_File NVARCHAR(MAX), @MSG_FDB_ID BIGINT', @MSG_Message, @MSG_File, @MSG_FDB_ID";
-            SqlCommand comm = new SqlCommand(query, conn);
-
-            comm.Parameters.AddWithValue("@sql", "EXEC Insert_Message @MSG_Message, @MSG_File, @MSG_FDB_ID");
-            comm.Parameters.AddWithValue("@MSG_Message", msg.MSG_Message);
-            comm.Parameters.AddWithValue("@MSG_File", msg.MSG_File);
-            comm.Parameters.AddWithValue("@MSG_FDB_ID", msg.MSG_FDB_ID);
-
-            conn.Open();
             try
             {
-                m = comm.ExecuteNonQuery();
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@MSG_Message", msg.MSG_Message);
+                Parameters.Add("@MSG_File", msg.MSG_File);
+                Parameters.Add("@MSG_FDB_ID", msg.MSG_FDB_ID);
+
+                IEnumerable<int> m =
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Insert_Message", commandType: CommandType.StoredProcedure);
 
                 return Request.CreateResponse(HttpStatusCode.OK, Messages.Inserted_Successfully("Message"));
             }
@@ -71,31 +79,21 @@ namespace ApplyForChina.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
             }
-            finally
-            {
-                conn.Close();
-            }
         }
 
         [HttpPut]
-        public HttpResponseMessage Update_Message([FromUri] long MSG_ID, [FromBody] Message msg)
+        public async Task<HttpResponseMessage> Update_Message([FromUri] long MSG_ID, [FromBody] Message msg)
         {
-            int m = 0;
-
-            SqlConnection conn = new SqlConnection(ConnectionString.ConStr());
-            string query = "EXEC sp_executesql @sql, N'@MSG_ID BIGINT, @MSG_Message NVARCHAR(MAX), @MSG_File NVARCHAR(MAX), @MSG_FDB_ID BIGINT', @MSG_ID, @MSG_Message, @MSG_File, @MSG_FDB_ID";
-            SqlCommand comm = new SqlCommand(query, conn);
-
-            comm.Parameters.AddWithValue("@sql", "EXEC Update_Message @MSG_ID, @MSG_Message, @MSG_File, @MSG_FDB_ID");
-            comm.Parameters.AddWithValue("@MSG_ID", MSG_ID);
-            comm.Parameters.AddWithValue("@MSG_Message", msg.MSG_Message);
-            comm.Parameters.AddWithValue("@MSG_File", msg.MSG_File);
-            comm.Parameters.AddWithValue("@MSG_FDB_ID", msg.MSG_FDB_ID);
-
-            conn.Open();
             try
             {
-                m = comm.ExecuteNonQuery();
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@MSG_ID", MSG_ID);
+                Parameters.Add("@MSG_Message", msg.MSG_Message);
+                Parameters.Add("@MSG_File", msg.MSG_File);
+                Parameters.Add("@MSG_FDB_ID", msg.MSG_FDB_ID);
+
+                IEnumerable<int> m =
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Update_Message", commandType: CommandType.StoredProcedure);
 
                 return Request.CreateResponse(HttpStatusCode.OK, Messages.Updated_Successfully("Message"));
             }
@@ -103,38 +101,24 @@ namespace ApplyForChina.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
             }
-            finally
-            {
-                conn.Close();
-            }
         }
 
         [HttpDelete]
-        public HttpResponseMessage Delete_Message([FromUri] long MSG_ID)
+        public async Task<HttpResponseMessage> Delete_Message([FromUri] long MSG_ID)
         {
-            int m = 0;
-
-            SqlConnection conn = new SqlConnection(ConnectionString.ConStr());
-            string query = "EXEC sp_executesql @sql, N'@MSG_ID BIGINT', @MSG_ID";
-            SqlCommand comm = new SqlCommand(query, conn);
-
-            comm.Parameters.AddWithValue("@sql", "EXEC Delete_Message @MSG_ID");
-            comm.Parameters.AddWithValue("@MSG_ID", MSG_ID);
-
-            conn.Open();
             try
             {
-                m = comm.ExecuteNonQuery();
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@MSG_ID", MSG_ID);
+
+                IEnumerable<int> m =
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Delete_Message", commandType: CommandType.StoredProcedure);
 
                 return Request.CreateResponse(HttpStatusCode.OK, Messages.Deleted_Successfully("Message"));
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
-            }
-            finally
-            {
-                conn.Close();
             }
         }
     }
