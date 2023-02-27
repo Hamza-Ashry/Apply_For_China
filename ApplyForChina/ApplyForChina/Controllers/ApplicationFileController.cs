@@ -1,11 +1,14 @@
 ﻿using ApplyForChina.Attributes;
 using ApplyForChina.Models;
+using Dapper;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace ApplyForChina.Controllers
@@ -13,176 +16,106 @@ namespace ApplyForChina.Controllers
     public class ApplicationFileController : ApiController
     {
         [HttpGet]
-        public HttpResponseMessage Get_Application_Files([FromUri] long APPF_APP_ID)
+        public async Task<HttpResponseMessage> Get_Application_Files([FromUri] long APPF_APP_ID)
         {
-            List<Application_File> appf = new List<Application_File>();
-
-            SqlConnection conn = new SqlConnection(ConnectionString.ConStr());
-            string query = "EXEC sp_executesql @sql, N'@APPF_APP_ID BIGINT', @APPF_APP_ID";
-            SqlCommand comm = new SqlCommand(query, conn);
-
-            comm.Parameters.AddWithValue("@sql", "EXEC Get_Application_Files @APPF_APP_ID");
-            comm.Parameters.AddWithValue("@APPF_APP_ID", APPF_APP_ID);
-
-            conn.Open();
             try
             {
-                SqlDataReader reader = comm.ExecuteReader();
-                while (reader.Read())
-                {
-                    appf.Add(new Application_File()
-                    {
-                        APPF_ID = long.Parse(reader[0].ToString()),
-                        APPF_Decoument = reader[1].ToString(),
-                        APPF_File = reader[2].ToString(),
-                        APPF_APP_ID = long.Parse(reader[3].ToString())
-                    });
-                }
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@APPF_APP_ID", APPF_APP_ID);
 
-                if (appf.Count == 0)
+                IEnumerable<Application_File> appf =
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<Application_File>("Get_Application_Files", Parameters, commandType: CommandType.StoredProcedure);
+
+                if (appf.Count() == 0)
                     return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
                 return Request.CreateResponse(HttpStatusCode.OK, appf);
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
-            }
-            finally
-            {
-                conn.Close();
             }
         }
 
         [HttpGet]
-        public HttpResponseMessage Get_Application_File([FromUri] long APPF_ID)
+        public async Task<HttpResponseMessage> Get_Application_File([FromUri] long APPF_ID)
         {
-            Application_File appf = null;
-
-            SqlConnection conn = new SqlConnection(ConnectionString.ConStr());
-            string query = "EXEC sp_executesql @sql, N'@APPF_ID BIGINT', @APPF_ID";
-            SqlCommand comm = new SqlCommand(query, conn);
-
-            comm.Parameters.AddWithValue("@sql", "EXEC Get_Application_File @APPF_ID");
-            comm.Parameters.AddWithValue("@APPF_ID", APPF_ID);
-
-            conn.Open();
             try
             {
-                SqlDataReader reader = comm.ExecuteReader();
-                while (reader.Read())
-                {
-                    appf = new Application_File()
-                    {
-                        APPF_ID = long.Parse(reader[0].ToString()),
-                        APPF_Decoument = reader[1].ToString(),
-                        APPF_File = reader[2].ToString(),
-                        APPF_APP_ID = long.Parse(reader[3].ToString())
-                    };
-                }
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@APPF_ID", APPF_ID);
 
-                if (appf == null)
+                IEnumerable<Application_File> appf =
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<Application_File>("Get_Application_File", Parameters, commandType: CommandType.StoredProcedure);
+
+                if (appf.Count() == 0)
                     return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
-                return Request.CreateResponse(HttpStatusCode.OK, appf);
+                return Request.CreateResponse(HttpStatusCode.OK, appf.First());
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
-            }
-            finally
-            {
-                conn.Close();
             }
         }
 
         [HttpPost]
-        public HttpResponseMessage Insert_Application_File([FromBody] Application_File appf)
+        public async Task<HttpResponseMessage> Insert_Application_File([FromBody] Application_File appf)
         {
-            int a = 0;
-
-            SqlConnection conn = new SqlConnection(ConnectionString.ConStr());
-            string query = "EXEC sp_executesql @sql, N'@APPF_Decoument NVARCHAR(MAX), @APPF_File NVARCHAR(MAX),  @APPF_APP_ID BIGINT', @APPF_Decoument, @APPF_File , @APPF_APP_ID";
-            SqlCommand comm = new SqlCommand(query, conn);
-
-            comm.Parameters.AddWithValue("@sql", "EXEC Insert_Application_File @APPF_Decoument, @APPF_File , @APPF_APP_ID");
-            comm.Parameters.AddWithValue("@APPF_Decoument", appf.APPF_Decoument);
-            comm.Parameters.AddWithValue("@APPF_File", appf.APPF_File);
-            comm.Parameters.AddWithValue("@APPF_APP_ID", appf.APPF_APP_ID);
-
-            conn.Open();
             try
             {
-                a = comm.ExecuteNonQuery();
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@APPF_Decoument", appf.APPF_Decoument);
+                Parameters.Add("@APPF_File", appf.APPF_File);
+                Parameters.Add("@APPF_APP_ID", appf.APPF_APP_ID);
 
-                return Request.CreateResponse(HttpStatusCode.OK, Messages.Inserted_Successfully("Application Files"));
+                IEnumerable<int> a =
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Insert_Application_File", Parameters, commandType: CommandType.StoredProcedure);
+
+                return Request.CreateResponse(HttpStatusCode.OK, Messages.Inserted_Successfully("Application File"));
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
-            }
-            finally
-            {
-                conn.Close();
             }
         }
 
         [HttpPut]
-        public HttpResponseMessage Update_Application_File([FromUri] long APPF_ID, [FromBody] Application_File appf)
+        public async Task<HttpResponseMessage> Update_Application_File([FromUri] long APPF_ID, [FromBody] Application_File appf)
         {
-            int a = 0;
-
-            SqlConnection conn = new SqlConnection(ConnectionString.ConStr());
-            string query = "EXEC sp_executesql @sql, N'@APPF_ID BIGINT, @APPF_Decoument NVARCHAR(MAX), @APPF_File NVARCHAR(MAX),  @APPF_APP_ID BIGINT', @APPF_ID, @APPF_Decoument, @APPF_File , @APPF_APP_ID";
-            SqlCommand comm = new SqlCommand(query, conn);
-
-            comm.Parameters.AddWithValue("@sql", "EXEC Update_Application_File @APPF_ID, @APPF_Decoument, @APPF_File , @APPF_APP_ID");
-            comm.Parameters.AddWithValue("@APPF_ID", APPF_ID);
-            comm.Parameters.AddWithValue("@APPF_Decoument", appf.APPF_Decoument);
-            comm.Parameters.AddWithValue("@APPF_File", appf.APPF_File);
-            comm.Parameters.AddWithValue("@APPF_APP_ID", appf.APPF_APP_ID);
-
-            conn.Open();
             try
             {
-                a = comm.ExecuteNonQuery();
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@APPF_ID", APPF_ID);
+                Parameters.Add("@APPF_Decoument", appf.APPF_Decoument);
+                Parameters.Add("@APPF_File", appf.APPF_File);
+                Parameters.Add("@APPF_APP_ID", appf.APPF_APP_ID);
 
-                return Request.CreateResponse(HttpStatusCode.OK, Messages.Updated_Successfully("Application Files"));
+                IEnumerable<int> a =
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Update_Application_File", Parameters, commandType: CommandType.StoredProcedure);
+
+                return Request.CreateResponse(HttpStatusCode.OK, Messages.Updated_Successfully("Application File"));
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
-            }
-            finally
-            {
-                conn.Close();
             }
         }
 
         [HttpDelete]
-        public HttpResponseMessage Delete_Application_File([FromUri] long APPF_ID)
+        public async Task<HttpResponseMessage> Delete_Application_File([FromUri] long APPF_ID)
         {
-            int a = 0;
-
-            SqlConnection conn = new SqlConnection(ConnectionString.ConStr());
-            string query = "EXEC sp_executesql @sql, N'@APPF_ID BIGINT', @APPF_ID";
-            SqlCommand comm = new SqlCommand(query, conn);
-
-            comm.Parameters.AddWithValue("@sql", "EXEC Delete_Application_File @APPF_ID");
-            comm.Parameters.AddWithValue("@APPF_ID", APPF_ID);
-
-            conn.Open();
             try
             {
-                a = comm.ExecuteNonQuery();
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@APPF_ID", APPF_ID);
 
-                return Request.CreateResponse(HttpStatusCode.OK, Messages.Deleted_Successfully("Application Files"));
+                IEnumerable<int> a =
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Delete_Application_File", Parameters, commandType: CommandType.StoredProcedure);
+
+                return Request.CreateResponse(HttpStatusCode.OK, Messages.Deleted_Successfully("Application File"));
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
-            }
-            finally
-            {
-                conn.Close();
             }
         }
     }
