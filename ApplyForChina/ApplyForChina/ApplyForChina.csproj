@@ -178,6 +178,7 @@
     <Compile Include="Controllers\ProgramController.cs" />
     <Compile Include="Controllers\ProgramDocumentController.cs" />
     <Compile Include="Controllers\ProgramFeeStructureController.cs" />
+    <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\StudentController.cs" />
     <Compile Include="Controllers\UniversityController.cs" />
     <Compile Include="Controllers\UserController.cs" />

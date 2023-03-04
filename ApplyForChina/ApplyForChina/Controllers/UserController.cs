@@ -30,7 +30,7 @@ namespace ApplyForChina.Controllers
 
                 if (usr.Count() == 0)
                     return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
-                return Request.CreateResponse(HttpStatusCode.OK, usr);
+                return Request.CreateResponse(HttpStatusCode.OK, usr.First());
             }
             catch (Exception ex)
             {
@@ -69,6 +69,7 @@ namespace ApplyForChina.Controllers
             {
                 var Parameters = new DynamicParameters();
                 Parameters.Add("@USR_ID", USR_ID);
+                Parameters.Add("@USR_Image", usr.USR_Image);
                 Parameters.Add("@USR_Username", usr.USR_Username);
                 Parameters.Add("@USR_City", usr.USR_City);
                 Parameters.Add("@USR_Email", usr.USR_Email);
