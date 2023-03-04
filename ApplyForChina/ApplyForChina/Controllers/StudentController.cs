@@ -107,15 +107,6 @@ namespace ApplyForChina.Controllers
                 Parameters.Add("@STD_Address", stu.STD_Address);
                 Parameters.Add("@STD_InChinaNow", stu.STD_InChinaNow);
                 Parameters.Add("@STD_StudyInChine", stu.STD_StudyInChine);
-                Parameters.Add("@STD_PassportPhoto", stu.STD_PassportPhoto);
-                Parameters.Add("@STD_PassportIDPhoto", stu.STD_PassportIDPhoto);
-                Parameters.Add("@STD_AcadimicTransctiptPhoto", stu.STD_AcadimicTransctiptPhoto);
-                Parameters.Add("@STD_HieghestEduPhoto", stu.STD_HieghestEduPhoto);
-                Parameters.Add("@STD_BankStatmentPhoto", stu.STD_BankStatmentPhoto);
-                Parameters.Add("@STD_ForeignerExam", stu.STD_ForeignerExam);
-                Parameters.Add("@STD_NoCrimimalRecord", stu.STD_NoCrimimalRecord);
-                Parameters.Add("@STD_AppForm", stu.STD_AppForm);
-                Parameters.Add("@STD_UniversityAppForm", stu.STD_UniversityAppForm);
                 Parameters.Add("@STD_USR_ID", stu.STD_USR_ID);
 
                 IEnumerable<int> s =
@@ -155,15 +146,6 @@ namespace ApplyForChina.Controllers
                 Parameters.Add("@STD_Address", stu.STD_Address);
                 Parameters.Add("@STD_InChinaNow", stu.STD_InChinaNow);
                 Parameters.Add("@STD_StudyInChine", stu.STD_StudyInChine);
-                Parameters.Add("@STD_PassportPhoto", stu.STD_PassportPhoto);
-                Parameters.Add("@STD_PassportIDPhoto", stu.STD_PassportIDPhoto);
-                Parameters.Add("@STD_AcadimicTransctiptPhoto", stu.STD_AcadimicTransctiptPhoto);
-                Parameters.Add("@STD_HieghestEduPhoto", stu.STD_HieghestEduPhoto);
-                Parameters.Add("@STD_BankStatmentPhoto", stu.STD_BankStatmentPhoto);
-                Parameters.Add("@STD_ForeignerExam", stu.STD_ForeignerExam);
-                Parameters.Add("@STD_NoCrimimalRecord", stu.STD_NoCrimimalRecord);
-                Parameters.Add("@STD_AppForm", stu.STD_AppForm);
-                Parameters.Add("@STD_UniversityAppForm", stu.STD_UniversityAppForm);
                 Parameters.Add("@STD_USR_ID", stu.STD_USR_ID);
 
                 IEnumerable<int> s =

@@ -8,6 +8,7 @@ namespace ApplyForChina.Models
     public class User
     {
         public int USR_ID { set; get; }
+        public string USR_Image { set; get; }
         public string USR_Username { set; get; }
         public string USR_City { set; get; }
         public string USR_Email { set; get; }

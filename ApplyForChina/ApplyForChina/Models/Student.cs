@@ -27,15 +27,6 @@ namespace ApplyForChina.Models
         public string STD_Address { set; get; }
         public bool STD_InChinaNow { set; get; }
         public bool STD_StudyInChine { set; get; }
-        public string STD_PassportPhoto { set; get; }
-        public string STD_PassportIDPhoto { set; get; }
-        public string STD_AcadimicTransctiptPhoto { set; get; }
-        public string STD_HieghestEduPhoto { set; get; }
-        public string STD_BankStatmentPhoto { set; get; }
-        public string STD_ForeignerExam { set; get; }
-        public string STD_NoCrimimalRecord { set; get; }
-        public string STD_AppForm { set; get; }
-        public string STD_UniversityAppForm { set; get; }
         public int STD_USR_ID { set; get; }
     }
 }
