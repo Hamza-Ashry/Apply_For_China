@@ -31,7 +31,7 @@ namespace ApplyForChina.Controllers
 
                 if (adm.Count() == 0)
                     return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
-                return Request.CreateResponse(HttpStatusCode.OK, adm);
+                return Request.CreateResponse(HttpStatusCode.OK, adm.First());
             }
             catch (Exception ex)
             {
