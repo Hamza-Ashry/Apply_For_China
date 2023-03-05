@@ -1,5 +1,8 @@
-﻿using System;
+﻿using ApplyForChina.Attributes;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -11,10 +14,16 @@ namespace ApplyForChina.Models
         public string STD_SurName { set; get; }
         public string STD_GivenName { set; get; }
         public string STD_Nationality { set; get; }
+
+        [JsonConverter(typeof(CustomDateConverter))]
+        [Column(TypeName = "Date")]
         public DateTime STD_DOB { set; get; }
         public bool STD_Gender { set; get; }
         public string STD_PassportNo { set; get; }
         public bool STD_SocialState { set; get; }
+
+        [JsonConverter(typeof(CustomDateConverter))]
+        [Column(TypeName = "Date")]
         public DateTime STD_PassportExDate { set; get; }
         public string STD_Religion { set; get; }
         public string STD_Language { set; get; }
