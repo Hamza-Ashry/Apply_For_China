@@ -109,6 +109,18 @@ namespace ApplyForChina.Controllers
             {
                 var Parameters = new DynamicParameters();
                 Parameters.Add("@ORD_ID", ORD_ID);
+                Parameters.Add("@ORD_Passport_sized_Photo", ord.ORD_Passport_sized_Photo);
+                Parameters.Add("@ORD_PassportID_Page", ord.ORD_PassportID_Page);
+                Parameters.Add("@ORD_Academic_Transcripts", ord.ORD_Academic_Transcripts);
+                Parameters.Add("@ORD_Highest_Degree", ord.ORD_Highest_Degree);
+                Parameters.Add("@ORD_Foreigner_Physical", ord.ORD_Foreigner_Physical);
+                Parameters.Add("@ORD_Non_criminal", ord.ORD_Non_criminal);
+                Parameters.Add("@ORD_Chinese_Lang", ord.ORD_Chinese_Lang);
+                Parameters.Add("@ORD_University_App", ord.ORD_University_App);
+                Parameters.Add("@ORD_Guarantee_Letter", ord.ORD_Guarantee_Letter);
+                Parameters.Add("@ORD_Residence_Permit", ord.ORD_Residence_Permit);
+                Parameters.Add("@ORD_StudyCertificateInChina", ord.ORD_StudyCertificateInChina);
+                Parameters.Add("@ORD_Others", ord.ORD_Others);
                 Parameters.Add("@ORD_STD_ID", ord.ORD_STD_ID);
                 Parameters.Add("@ORD_USR_ID", ord.ORD_USR_ID);
 

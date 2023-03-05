@@ -165,6 +165,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Attributes\ConnectionString.cs" />
+    <Compile Include="Attributes\CustomDateConverter.cs" />
     <Compile Include="Attributes\Messages.cs" />
     <Compile Include="Attributes\SingletonSqlConnection.cs" />
     <Compile Include="Controllers\AdminController.cs" />

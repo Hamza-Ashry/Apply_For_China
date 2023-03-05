@@ -1,5 +1,8 @@
-﻿using System;
+﻿using ApplyForChina.Attributes;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -19,6 +22,9 @@ namespace ApplyForChina.Models
 		public string PRG_Degree { get; set; }
 		public string PRG_Teaching_Languages { get; set; }
 		public string PRG_Field { get; set; }
+
+		[JsonConverter(typeof(CustomDateConverter))]
+		[Column(TypeName = "Date")]
 		public DateTime PRG_Expired_date { get; set; }
 		public float PRG_Duration { get; set; }
 		public string PRG_Policy { get; set; }
