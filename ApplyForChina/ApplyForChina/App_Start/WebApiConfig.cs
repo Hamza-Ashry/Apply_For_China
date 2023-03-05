@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using System.Net.Http.Formatting;
 using System.Web.Http.Cors;
+using System.Web.Mvc;
 
 namespace ApplyForChina
 {
@@ -13,7 +14,6 @@ namespace ApplyForChina
         {
             config.Formatters.Clear();
             config.Formatters.Add(new JsonMediaTypeFormatter());
-            // Web API configuration and services
 
             // Enable CORS
             var cors = new EnableCorsAttribute("*", "*", "*");

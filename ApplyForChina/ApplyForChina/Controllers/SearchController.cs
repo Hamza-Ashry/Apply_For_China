@@ -36,6 +36,8 @@ namespace ApplyForChina.Controllers
 
                 var unv = results.Read<University>().ToList();
 
+                HttpContext.Current.Response.Headers.Add("Access-Control-Expose-Headers", "Content-Type, Universities-total-count");
+
                 if (unv.Count() == 0)
                 {
                     HttpContext.Current.Response.Headers.Add("Universities-total-count", results.Read<int>().FirstOrDefault().ToString());
@@ -77,6 +79,8 @@ namespace ApplyForChina.Controllers
 
                 var prg_unv = results.Read<dynamic>().ToList();
 
+                HttpContext.Current.Response.Headers.Add("Access-Control-Expose-Headers", "Content-Type, Programs-total-count");
+
                 if (prg_unv.Count() == 0)
                 {
                     HttpContext.Current.Response.Headers.Add("Programs-total-count", results.Read<int>().FirstOrDefault().ToString());
@@ -107,6 +111,9 @@ namespace ApplyForChina.Controllers
                     await SingletonSqlConnection.Instance.Connection.QueryMultipleAsync("Search_Student", Parameters, commandType: CommandType.StoredProcedure);
 
                 var std = results.Read<Student>().ToList();
+
+                HttpContext.Current.Response.Headers.Add("Access-Control-Expose-Headers", "Content-Type, Students-total-count");
+
                 if (std.Count() == 0)
                 {
                     HttpContext.Current.Response.Headers.Add("Students-total-count", results.Read<int>().FirstOrDefault().ToString());
@@ -137,6 +144,41 @@ namespace ApplyForChina.Controllers
                     await SingletonSqlConnection.Instance.Connection.QueryMultipleAsync("Search_Order", Parameters, commandType: CommandType.StoredProcedure);
 
                 var ord_std = results.Read<dynamic>().ToList();
+
+                HttpContext.Current.Response.Headers.Add("Access-Control-Expose-Headers", "Content-Type, Orders-total-count");
+
+                if (ord_std.Count() == 0)
+                {
+                    HttpContext.Current.Response.Headers.Add("Orders-total-count", results.Read<int>().FirstOrDefault().ToString());
+                    return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
+                }
+
+                HttpContext.Current.Response.Headers.Add("Orders-total-count", results.Read<int>().FirstOrDefault().ToString());
+                return Request.CreateResponse(HttpStatusCode.OK, ord_std);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
+            }
+        }
+
+        [HttpGet]
+        public async Task<HttpResponseMessage> Filter_Order([FromUri] int USR_ID, [FromUri] string State, [FromUri] int Page_Number, [FromUri] int Limit)
+        {
+            try
+            {
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@ORD_USR_ID", USR_ID);
+                Parameters.Add("@ORD_State", State);
+                Parameters.Add("@Page_Number", Page_Number);
+                Parameters.Add("@Limit", Limit);
+
+                var results =
+                    await SingletonSqlConnection.Instance.Connection.QueryMultipleAsync("Filter_Order", Parameters, commandType: CommandType.StoredProcedure);
+
+                var ord_std = results.Read<dynamic>().ToList();
+
+                HttpContext.Current.Response.Headers.Add("Access-Control-Expose-Headers", "Content-Type, Orders-total-count");
 
                 if (ord_std.Count() == 0)
                 {
