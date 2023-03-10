@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -25,5 +26,20 @@ namespace ApplyForChina.Models
 		public string ORD_Others { get; set; }
 		public long ORD_STD_ID { get; set; }
 		public int ORD_USR_ID { get; set; }
+		public string STD_Name { get; set; }
+		public float ORD_Total { get; set; }
+		public IEnumerable<Application> ORD_Apps { set; get; }
+		public bool ShouldSerializeORD_Total()
+		{
+			return ORD_Total != 0;
+		}
+		public bool ShouldSerializeSTD_Name()
+		{
+			return STD_Name != null;
+		}
+		public bool ShouldSerializeORD_Apps()
+		{
+			return ORD_Apps != null;
+		}
 	}
 }
