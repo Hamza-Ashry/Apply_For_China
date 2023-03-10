@@ -54,7 +54,7 @@ namespace ApplyForChina.Controllers
         }
 
         [HttpGet]
-        public async Task<HttpResponseMessage> Search_Program([FromUri] string PRG_Code, [FromUri] string PRG_Field,
+        public async Task<HttpResponseMessage> Search_Program([FromUri] string IsSelf, [FromUri] string PRG_Code, [FromUri] string PRG_Field,
             [FromUri] string PRG_Degree, [FromUri] string PRG_TL, [FromUri] float PRG_Duration,
             [FromUri] int PRG_Year, [FromUri] string PRG_Intake, [FromUri] string PRG_City, [FromUri] string UNV_Name,
             [FromUri] int Page_Number, [FromUri] int Limit)
@@ -62,6 +62,7 @@ namespace ApplyForChina.Controllers
             try
             {
                 var Parameters = new DynamicParameters();
+                Parameters.Add("@IsSelf", IsSelf);
                 Parameters.Add("@Program_Code", PRG_Code);
                 Parameters.Add("@Field", PRG_Field);
                 Parameters.Add("@Degree", PRG_Degree);
@@ -75,7 +76,7 @@ namespace ApplyForChina.Controllers
                 Parameters.Add("@Limit", Limit);
 
                 var results =
-                await SingletonSqlConnection.Instance.Connection.QueryMultipleAsync("Search_Program", Parameters, commandType: CommandType.StoredProcedure);
+                    await SingletonSqlConnection.Instance.Connection.QueryMultipleAsync("Search_Program", Parameters, commandType: CommandType.StoredProcedure);
 
                 var prg_unv = results.Read<dynamic>().ToList();
 
@@ -129,54 +130,42 @@ namespace ApplyForChina.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<HttpResponseMessage> Search_Order([FromUri] int USR_ID, [FromUri] string Term, [FromUri] int Page_Number, [FromUri] int Limit)
+        private IEnumerable<Application> Get_Order_Applications([FromUri] long APP_ORD_ID)
         {
             try
             {
                 var Parameters = new DynamicParameters();
-                Parameters.Add("@USR_ID", USR_ID);
-                Parameters.Add("@Search_Term", Term);
-                Parameters.Add("@Page_Number", Page_Number);
-                Parameters.Add("@Limit", Limit);
-                
-                var results =
-                    await SingletonSqlConnection.Instance.Connection.QueryMultipleAsync("Search_Order", Parameters, commandType: CommandType.StoredProcedure);
+                Parameters.Add("@APP_ORD_ID", APP_ORD_ID);
 
-                var ord_std = results.Read<dynamic>().ToList();
+                IEnumerable<Application> app =
+                    SingletonSqlConnection.Instance.Connection.Query<Application>("Get_Order_ApplicationsFees", Parameters, commandType: CommandType.StoredProcedure);
 
-                HttpContext.Current.Response.Headers.Add("Access-Control-Expose-Headers", "Content-Type, Orders-total-count");
-
-                if (ord_std.Count() == 0)
-                {
-                    HttpContext.Current.Response.Headers.Add("Orders-total-count", results.Read<int>().FirstOrDefault().ToString());
-                    return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
-                }
-
-                HttpContext.Current.Response.Headers.Add("Orders-total-count", results.Read<int>().FirstOrDefault().ToString());
-                return Request.CreateResponse(HttpStatusCode.OK, ord_std);
+                if (app.Count() == 0)
+                    return null;
+                return app;
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
+                throw ex;
             }
         }
 
         [HttpGet]
-        public async Task<HttpResponseMessage> Filter_Order([FromUri] int USR_ID, [FromUri] string State, [FromUri] int Page_Number, [FromUri] int Limit)
+        public async Task<HttpResponseMessage> Filter_Order([FromUri] int USR_ID, [FromUri] string State, [FromUri] string Search_Term, [FromUri] int Page_Number, [FromUri] int Limit)
         {
             try
             {
                 var Parameters = new DynamicParameters();
                 Parameters.Add("@ORD_USR_ID", USR_ID);
                 Parameters.Add("@ORD_State", State);
+                Parameters.Add("@Search_Term", Search_Term);
                 Parameters.Add("@Page_Number", Page_Number);
                 Parameters.Add("@Limit", Limit);
 
                 var results =
                     await SingletonSqlConnection.Instance.Connection.QueryMultipleAsync("Filter_Order", Parameters, commandType: CommandType.StoredProcedure);
 
-                var ord_std = results.Read<dynamic>().ToList();
+                var ord_std = results.Read<Order>().ToList();
 
                 HttpContext.Current.Response.Headers.Add("Access-Control-Expose-Headers", "Content-Type, Orders-total-count");
 
@@ -186,8 +175,27 @@ namespace ApplyForChina.Controllers
                     return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
                 }
 
+                List<Order> ord_apps = new List<Order>();
+                foreach (dynamic ord in ord_std)
+                {
+                    IEnumerable<Application> ordApps = Get_Order_Applications(ord.ORD_ID);
+                    float totalAppPrice = 0;
+
+                    if (ordApps != null)
+                    {
+                        foreach (Application app in ordApps)
+                        {
+                            totalAppPrice += app.PFS_Price;
+                        }
+                    }
+                    Order order = ord;
+                    order.ORD_Apps = ordApps;
+                    order.ORD_Total = totalAppPrice;
+                    ord_apps.Add(order);
+                }
+
                 HttpContext.Current.Response.Headers.Add("Orders-total-count", results.Read<int>().FirstOrDefault().ToString());
-                return Request.CreateResponse(HttpStatusCode.OK, ord_std);
+                return Request.CreateResponse(HttpStatusCode.OK, ord_apps);
             }
             catch (Exception ex)
             {
