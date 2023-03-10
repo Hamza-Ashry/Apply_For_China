@@ -41,6 +41,27 @@ namespace ApplyForChina.Controllers
         }
 
         [HttpGet]
+        public async Task<HttpResponseMessage> Get_University_Programs([FromUri] int UNV_ID)
+        {
+            try
+            {
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@UNV_ID", UNV_ID);
+
+                IEnumerable<dynamic> prgs =
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<dynamic>("Get_University_Programs", Parameters, commandType: CommandType.StoredProcedure);
+
+                if (prgs.Count() == 0)
+                    return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
+                return Request.CreateResponse(HttpStatusCode.OK, prgs);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
+            }
+        }
+
+        [HttpGet]
         public async Task<HttpResponseMessage> Get_University_By_ID([FromUri] long UNV_ID)
         {
             try
@@ -54,24 +75,6 @@ namespace ApplyForChina.Controllers
                 if (unv.Count() == 0)
                     return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
                 return Request.CreateResponse(HttpStatusCode.OK, unv.First());
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
-            }
-        }
-
-        [HttpGet]
-        public async Task<HttpResponseMessage> Get_Universities_Total()
-        {
-            try
-            {
-                IEnumerable<int> total =
-                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Get_Universities_Total", commandType: CommandType.StoredProcedure);
-
-                if (total.Count() == 0)
-                    return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
-                return Request.CreateResponse(HttpStatusCode.OK, total.First());
             }
             catch (Exception ex)
             {

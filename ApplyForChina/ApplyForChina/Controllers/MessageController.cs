@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
 
@@ -27,32 +28,20 @@ namespace ApplyForChina.Controllers
                 Parameters.Add("@Page_Number", Page_Number);
                 Parameters.Add("@Limit", Limit);
 
-                IEnumerable<Message> msg = await SingletonSqlConnection.Instance.Connection.QueryAsync<Message>("Get_All_Agent_Messages", Parameters, commandType: CommandType.StoredProcedure);
+                var results = await SingletonSqlConnection.Instance.Connection.QueryMultipleAsync("Get_All_Agent_Messages", Parameters, commandType: CommandType.StoredProcedure);
+
+                var msg = results.Read<Message>().ToList();
+
+                HttpContext.Current.Response.Headers.Add("Access-Control-Expose-Headers", "Content-Type, Messages-total-count");
 
                 if (msg.Count() == 0)
+                {
+                    HttpContext.Current.Response.Headers.Add("Messages-total-count", results.Read<int>().FirstOrDefault().ToString());
                     return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
+                }
+
+                HttpContext.Current.Response.Headers.Add("Messages-total-count", results.Read<int>().FirstOrDefault().ToString());
                 return Request.CreateResponse(HttpStatusCode.OK, msg);
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
-            }
-        }
-
-        [HttpGet]
-        public async Task<HttpResponseMessage> Get_All_Agent_Messages_Total([FromUri] int USR_ID)
-        {
-            try
-            {
-                var Parameters = new DynamicParameters();
-                Parameters.Add("@USR_ID", USR_ID);
-
-                IEnumerable<int> msg =
-                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Get_All_Agent_Messages_Total", Parameters, commandType: CommandType.StoredProcedure);
-
-                if (msg.Count() == 0)
-                    return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
-                return Request.CreateResponse(HttpStatusCode.OK, msg.First());
             }
             catch (Exception ex)
             {
@@ -71,7 +60,7 @@ namespace ApplyForChina.Controllers
                 Parameters.Add("@MSG_FDB_ID", msg.MSG_FDB_ID);
 
                 IEnumerable<int> m =
-                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Insert_Message", commandType: CommandType.StoredProcedure);
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Insert_Message", Parameters, commandType: CommandType.StoredProcedure);
 
                 return Request.CreateResponse(HttpStatusCode.OK, Messages.Inserted_Successfully("Message"));
             }
@@ -93,7 +82,7 @@ namespace ApplyForChina.Controllers
                 Parameters.Add("@MSG_FDB_ID", msg.MSG_FDB_ID);
 
                 IEnumerable<int> m =
-                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Update_Message", commandType: CommandType.StoredProcedure);
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Update_Message", Parameters, commandType: CommandType.StoredProcedure);
 
                 return Request.CreateResponse(HttpStatusCode.OK, Messages.Updated_Successfully("Message"));
             }
@@ -112,7 +101,7 @@ namespace ApplyForChina.Controllers
                 Parameters.Add("@MSG_ID", MSG_ID);
 
                 IEnumerable<int> m =
-                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Delete_Message", commandType: CommandType.StoredProcedure);
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Delete_Message", Parameters, commandType: CommandType.StoredProcedure);
 
                 return Request.CreateResponse(HttpStatusCode.OK, Messages.Deleted_Successfully("Message"));
             }

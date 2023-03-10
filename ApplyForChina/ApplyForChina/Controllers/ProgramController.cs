@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -82,7 +83,47 @@ namespace ApplyForChina.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
             }
         }
-        
+
+        private IEnumerable<Program_Document> Get_PRG_Documents(long PRG_ID)
+        {
+            try
+            {
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@PRG_ID", PRG_ID);
+
+                IEnumerable<Program_Document> pd = 
+                    SingletonSqlConnection.Instance.Connection.Query<Program_Document>("Get_PRG_Documents", Parameters, commandType: CommandType.StoredProcedure);
+
+                if (pd.Count() == 0)
+                    return null;
+                return pd;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public IEnumerable<Program_FeeStructure> Get_PRG_Fees(long PRG_ID)
+        {
+            try
+            {
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@PRG_ID", PRG_ID);
+
+                IEnumerable<Program_FeeStructure> pfs = 
+                    SingletonSqlConnection.Instance.Connection.Query<Program_FeeStructure>("Get_PRG_Fees", Parameters, commandType: CommandType.StoredProcedure);
+
+                if (pfs.Count() == 0)
+                    return null;
+                return pfs;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         [HttpGet]
         public async Task<HttpResponseMessage> Get_Program_By_ID([FromUri] long PRG_ID)
         {
@@ -91,12 +132,21 @@ namespace ApplyForChina.Controllers
                 var Parameters = new DynamicParameters();
                 Parameters.Add("@PRG_ID", PRG_ID);
 
-                IEnumerable<Program> prg =
+                var result =
                     await SingletonSqlConnection.Instance.Connection.QueryAsync<Program>("Get_Program_By_ID", Parameters, commandType: CommandType.StoredProcedure);
 
-                if (prg.Count() == 0)
+
+                Program full_prg = null;
+                full_prg = result.FirstOrDefault();
+                if (full_prg != null)
+                {
+                    full_prg.PDOC = Get_PRG_Documents(full_prg.PRG_ID);
+                    full_prg.PFS = Get_PRG_Fees(full_prg.PRG_ID);
+                }
+                
+                if (full_prg == null)
                     return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
-                return Request.CreateResponse(HttpStatusCode.OK, prg.First());
+                return Request.CreateResponse(HttpStatusCode.OK, full_prg);
             }
             catch (Exception ex)
             {
@@ -104,81 +154,6 @@ namespace ApplyForChina.Controllers
             }
         }
         
-        [HttpGet]
-        public async Task<HttpResponseMessage> Get_Program_By_Code([FromUri] string PRG_Code)
-        {
-            try
-            {
-                var Parameters = new DynamicParameters();
-                Parameters.Add("@PRG_Program_Code", PRG_Code);
-
-                IEnumerable<Program> prg =
-                    await SingletonSqlConnection.Instance.Connection.QueryAsync<Program>("Get_Program_By_Code", Parameters, commandType: CommandType.StoredProcedure);
-
-                if (prg.Count() == 0)
-                    return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
-                return Request.CreateResponse(HttpStatusCode.OK, prg.First());
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
-            }
-        }
-
-        [HttpGet]
-        public async Task<HttpResponseMessage> Get_Programs_Total()
-        {
-            try
-            {
-                IEnumerable<int> total =
-                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Get_Programs_Total", commandType: CommandType.StoredProcedure);
-
-                if (total.Count() == 0)
-                    return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
-                return Request.CreateResponse(HttpStatusCode.OK, total.First());
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
-            }
-        }
-
-        [HttpGet]
-        public async Task<HttpResponseMessage> Get_Scholarships_Total()
-        {
-            try
-            {
-                IEnumerable<int> total =
-                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Get_Scholarships_Total", commandType: CommandType.StoredProcedure);
-
-                if (total.Count() == 0)
-                    return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
-                return Request.CreateResponse(HttpStatusCode.OK, total.First());
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
-            }
-        }
-
-        [HttpGet]
-        public async Task<HttpResponseMessage> Get_Selffinanceds_Total()
-        {
-            try
-            {
-                IEnumerable<int> total =
-                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Get_Selffinanceds_Total", commandType: CommandType.StoredProcedure);
-
-                if (total.Count() == 0)
-                    return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
-                return Request.CreateResponse(HttpStatusCode.OK, total.First());
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
-            }
-        }
-
         [HttpPost]
         public async Task<HttpResponseMessage> Insert_Program([FromBody] Program prg)
         {

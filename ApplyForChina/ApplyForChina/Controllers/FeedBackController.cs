@@ -11,6 +11,7 @@ using System.Web.Http;
 using System.Web.Http.Cors;
 using Dapper;
 using System.Data;
+using System.Web;
 
 namespace ApplyForChina.Controllers
 {
@@ -26,30 +27,21 @@ namespace ApplyForChina.Controllers
                 Parameters.Add("@Page_Number", Page_Number);
                 Parameters.Add("@Limit", Limit);
 
-                IEnumerable<FeedBack> fdb = 
-                    await SingletonSqlConnection.Instance.Connection.QueryAsync<FeedBack>("Get_All_FeedBacks", Parameters, commandType: CommandType.StoredProcedure);
+                var results = 
+                    await SingletonSqlConnection.Instance.Connection.QueryMultipleAsync("Get_All_FeedBacks", Parameters, commandType: CommandType.StoredProcedure);
+
+                HttpContext.Current.Response.Headers.Add("Access-Control-Expose-Headers", "Content-Type, FeedBacks-total-count");
+
+                var fdb = results.Read<FeedBack>().ToList();
 
                 if (fdb.Count() == 0)
+                {
+                    HttpContext.Current.Response.Headers.Add("FeedBacks-total-count", results.Read<int>().FirstOrDefault().ToString());
                     return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
+                }
+
+                HttpContext.Current.Response.Headers.Add("FeedBacks-total-count", results.Read<int>().FirstOrDefault().ToString());
                 return Request.CreateResponse(HttpStatusCode.OK, fdb);
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
-            }
-        }
-
-        [HttpGet]
-        public async Task<HttpResponseMessage> Get_All_FeedBacks_Total()
-        {
-            try
-            {
-                IEnumerable<int> fdb =
-                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Get_All_FeedBacks_Total", commandType: CommandType.StoredProcedure);
-
-                if (fdb.Count() == 0)
-                    return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
-                return Request.CreateResponse(HttpStatusCode.OK, fdb.First());
             }
             catch (Exception ex)
             {
@@ -68,7 +60,7 @@ namespace ApplyForChina.Controllers
                 Parameters.Add("@FDB_USR_ID", fdb.FDB_USR_ID);
 
                 IEnumerable<int> f =
-                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Insert_FeedBack", commandType: CommandType.StoredProcedure);
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Insert_FeedBack", Parameters, commandType: CommandType.StoredProcedure);
 
                 return Request.CreateResponse(HttpStatusCode.OK, Messages.Inserted_Successfully("Feed Back"));
             }
@@ -90,7 +82,7 @@ namespace ApplyForChina.Controllers
                 Parameters.Add("@FDB_USR_ID", fdb.FDB_USR_ID);
 
                 IEnumerable<int> f =
-                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Update_FeedBack", commandType: CommandType.StoredProcedure);
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Update_FeedBack", Parameters, commandType: CommandType.StoredProcedure);
 
                 return Request.CreateResponse(HttpStatusCode.OK, Messages.Updated_Successfully("Feed Back"));
             }
@@ -109,7 +101,7 @@ namespace ApplyForChina.Controllers
                 Parameters.Add("@FDB_ID", FDB_ID);
 
                 IEnumerable<int> f =
-                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Delete_FeedBack", commandType: CommandType.StoredProcedure);
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Delete_FeedBack", Parameters, commandType: CommandType.StoredProcedure);
 
                 return Request.CreateResponse(HttpStatusCode.OK, Messages.Deleted_Successfully("Feed Back"));
             }
