@@ -22,6 +22,8 @@ namespace ApplyForChina.Models
 		public string PRG_Degree { get; set; }
 		public string PRG_Teaching_Languages { get; set; }
 		public string PRG_Field { get; set; }
+
+		[JsonConverter(typeof(CustomDateConverter))]
 		public DateTime PRG_Expired_date { get; set; }
 		public float PRG_Duration { get; set; }
 		public string PRG_Policy { get; set; }
@@ -31,6 +33,7 @@ namespace ApplyForChina.Models
 		public long PRG_UNV_ID { get; set; }
 		public string PRG_City { get; set; }
 		public string UNV_Name { get; set; }
+		public string UNV_Image { get; set; }
 		public IEnumerable<Program_Document> PDOC { get; set; }
         public IEnumerable<Program_FeeStructure> PFS { get; set; }
 		public bool ShouldSerializePRG_City()
@@ -40,6 +43,10 @@ namespace ApplyForChina.Models
 		public bool ShouldSerializeUNV_Name()
 		{
 			return UNV_Name != null;
+		}
+		public bool ShouldSerializeUNV_Image()
+		{
+			return UNV_Image != null;
 		}
 		public bool ShouldSerializePDOC()
         {

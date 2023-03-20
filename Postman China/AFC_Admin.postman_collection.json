@@ -1,0 +1,134 @@
+{
+	"info": {
+		"_postman_id": "6a7878c8-e4c8-46e3-898e-87260125ae80",
+		"name": "AFC_Admin",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26044109"
+	},
+	"item": [
+		{
+			"name": "Admin_Login",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "applywork-001-site1.atempurl.com/api/Admin/Admin_Login?ADM_Username=hassan&ADM_Password=123",
+					"host": [
+						"applywork-001-site1",
+						"atempurl",
+						"com"
+					],
+					"path": [
+						"api",
+						"Admin",
+						"Admin_Login"
+					],
+					"query": [
+						{
+							"key": "ADM_Username",
+							"value": "hassan"
+						},
+						{
+							"key": "ADM_Password",
+							"value": "123"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Insert_Admin",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"ADM_Username\":\"hamza\",\r\n    \"ADM_Password\":\"456\",\r\n    \"ADM_Role\":2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "applywork-001-site1.atempurl.com/api/Admin/Insert_Admin",
+					"host": [
+						"applywork-001-site1",
+						"atempurl",
+						"com"
+					],
+					"path": [
+						"api",
+						"Admin",
+						"Insert_Admin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update_Admin",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"ADM_Username\":\"hamza\",\r\n    \"ADM_Password\":\"789\",\r\n    \"ADM_Role\":2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "applywork-001-site1.atempurl.com/api/Admin/Update_Admin?ADM_ID=3",
+					"host": [
+						"applywork-001-site1",
+						"atempurl",
+						"com"
+					],
+					"path": [
+						"api",
+						"Admin",
+						"Update_Admin"
+					],
+					"query": [
+						{
+							"key": "ADM_ID",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete_Admin",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "applywork-001-site1.atempurl.com/api/Admin/Delete_Admin?ADM_ID=3",
+					"host": [
+						"applywork-001-site1",
+						"atempurl",
+						"com"
+					],
+					"path": [
+						"api",
+						"Admin",
+						"Delete_Admin"
+					],
+					"query": [
+						{
+							"key": "ADM_ID",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

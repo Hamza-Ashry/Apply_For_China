@@ -18,6 +18,35 @@ namespace ApplyForChina.Controllers
     public class StatisticsController : ApiController
     {
         [HttpGet]
+        public async Task<HttpResponseMessage> Admin_Statistics()
+        {
+            try
+            {
+                var results =
+                    await SingletonSqlConnection.Instance.Connection.QueryMultipleAsync("Admin_Statistics");
+
+                Dictionary<string, dynamic> stats = new Dictionary<string, dynamic>()
+                {
+                    { "Spend_Total", results.Read<float>().Single()},
+                    { "STD_Total", results.Read<int>().Single()},
+                    { "USR_Total", results.Read<int>().Single()},
+                    { "Males_Total", results.Read<int>().Single()},
+                    { "Females_Total", results.Read<int>().Single()},
+                    { "ORD_Total", results.Read<int>().Single()},
+                    { "Pending_Total", results.Read<int>().Single()},
+                    { "Success_Total", results.Read<int>().Single()},
+                    { "Faild_Total", results.Read<int>().Single()}
+                };
+
+                return Request.CreateResponse(HttpStatusCode.OK, stats);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
+            }
+        }
+
+        [HttpGet]
         public async Task<HttpResponseMessage> Agent_Statistics([FromUri] int USR_ID)
         {
             try

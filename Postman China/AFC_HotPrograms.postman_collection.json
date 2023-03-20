@@ -1,0 +1,101 @@
+{
+	"info": {
+		"_postman_id": "44c0f9e0-b001-4018-82b9-a33e17a71b37",
+		"name": "AFC_HotPrograms",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19773524"
+	},
+	"item": [
+		{
+			"name": "Get_Hot_Programs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://chinaproject-001-site1.itempurl.com/api/Program/Get_Hot_Programs?Page_Number=1&Limit=5",
+					"protocol": "http",
+					"host": [
+						"chinaproject-001-site1",
+						"itempurl",
+						"com"
+					],
+					"path": [
+						"api",
+						"Program",
+						"Get_Hot_Programs"
+					],
+					"query": [
+						{
+							"key": "Page_Number",
+							"value": "1"
+						},
+						{
+							"key": "Limit",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Insert_Hot_Program",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"PHOT_PRG_IDs\":[30,31,32,33,34]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://chinaproject-001-site1.itempurl.com/api/Program/Insert_Hot_Program",
+					"protocol": "http",
+					"host": [
+						"chinaproject-001-site1",
+						"itempurl",
+						"com"
+					],
+					"path": [
+						"api",
+						"Program",
+						"Insert_Hot_Program"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete_Hot_Program",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://chinaproject-001-site1.itempurl.com/api/Program/Delete_Hot_Program?PHOT_ID=16",
+					"protocol": "http",
+					"host": [
+						"chinaproject-001-site1",
+						"itempurl",
+						"com"
+					],
+					"path": [
+						"api",
+						"Program",
+						"Delete_Hot_Program"
+					],
+					"query": [
+						{
+							"key": "PHOT_ID",
+							"value": "16"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -61,27 +61,6 @@ namespace ApplyForChina.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<HttpResponseMessage> Get_Agent_Orders_Total([FromUri] int ORD_USR_ID)
-        {
-            try
-            {
-                var Parameters = new DynamicParameters();
-                Parameters.Add("@ORD_USR_ID", ORD_USR_ID);
-
-                IEnumerable<int> ord =
-                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Get_Agent_Orders_Total", Parameters, commandType: CommandType.StoredProcedure);
-
-                if (ord.Count() == 0)
-                    return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
-                return Request.CreateResponse(HttpStatusCode.OK, ord.First());
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
-            }
-        }
-
         [HttpPost]
         public async Task<HttpResponseMessage> Insert_Order([FromBody] Order ord)
         {
