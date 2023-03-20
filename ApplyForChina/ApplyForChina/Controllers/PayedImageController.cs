@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
 
@@ -26,11 +27,20 @@ namespace ApplyForChina.Controllers
                 Parameters.Add("@Page_Number", Page_Number);
                 Parameters.Add("@Limit", Limit);
 
-                IEnumerable<Payed_Image> pimg =
-                    await SingletonSqlConnection.Instance.Connection.QueryAsync<Payed_Image>("Get_Payed_Images", Parameters, commandType: CommandType.StoredProcedure);
+                var results =
+                    await SingletonSqlConnection.Instance.Connection.QueryMultipleAsync("Get_Payed_Images", Parameters, commandType: CommandType.StoredProcedure);
+
+                var pimg = results.Read<Payed_Image>().ToList();
+
+                HttpContext.Current.Response.Headers.Add("Access-Control-Expose-Headers", "Content-Type, PayedImage-total-count");
 
                 if (pimg.Count() == 0)
+                {
+                    HttpContext.Current.Response.Headers.Add("PayedImage-total-count", results.Read<int>().FirstOrDefault().ToString());
                     return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
+                }
+
+                HttpContext.Current.Response.Headers.Add("PayedImage-total-count", results.Read<int>().FirstOrDefault().ToString());
                 return Request.CreateResponse(HttpStatusCode.OK, pimg);
             }
             catch (Exception ex)
@@ -53,24 +63,6 @@ namespace ApplyForChina.Controllers
                     await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Insert_Payed_Image", Parameters, commandType: CommandType.StoredProcedure);
 
                 return Request.CreateResponse(HttpStatusCode.OK, Messages.Inserted_Successfully("Payed Image"));
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
-            }
-        }
-
-        [HttpGet]
-        public async Task<HttpResponseMessage> Get_Payed_Images_Total()
-        {
-            try
-            {
-                IEnumerable<int> pimg =
-                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Get_Payed_Images_Total", commandType: CommandType.StoredProcedure);
-
-                if (pimg.Count() == 0)
-                    return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
-                return Request.CreateResponse(HttpStatusCode.OK, pimg.First());
             }
             catch (Exception ex)
             {

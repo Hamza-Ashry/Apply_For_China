@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
 
@@ -153,7 +154,38 @@ namespace ApplyForChina.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
             }
         }
-        
+
+        [HttpGet]
+        public async Task<HttpResponseMessage> Get_Hot_Programs([FromUri] int Page_Number, [FromUri] int Limit)
+        {
+            try
+            {
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@Page_Number", Page_Number);
+                Parameters.Add("@Limit", Limit);
+
+                var results =
+                    await SingletonSqlConnection.Instance.Connection.QueryMultipleAsync("Get_Hot_Programs", Parameters, commandType: CommandType.StoredProcedure);
+
+                var hprg = results.Read<dynamic>().ToList();
+
+                HttpContext.Current.Response.Headers.Add("Access-Control-Expose-Headers", "Content-Type, HotPrograms-total-count");
+
+                if (hprg.Count() == 0)
+                {
+                    HttpContext.Current.Response.Headers.Add("HotPrograms-total-count", results.Read<int>().FirstOrDefault().ToString());
+                    return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
+                }
+
+                HttpContext.Current.Response.Headers.Add("HotPrograms-total-count", results.Read<int>().FirstOrDefault().ToString());
+                return Request.CreateResponse(HttpStatusCode.OK, hprg);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
+            }
+        }
+
         [HttpPost]
         public async Task<HttpResponseMessage> Insert_Program([FromBody] Program prg)
         {
@@ -185,6 +217,30 @@ namespace ApplyForChina.Controllers
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
+            }
+        }
+
+        [HttpPost]
+        public async Task<HttpResponseMessage> Insert_Hot_Program([FromBody] Hot_Program hprg)
+        {
+            using (var Transaction = SingletonSqlConnection.Instance.Connection.BeginTransaction())
+            {
+                try
+                {
+                    foreach (int id in hprg.PHOT_PRG_IDs)
+                    {
+                        IEnumerable<int> p =
+                            await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Insert_Hot_Program", new { PHOT_PRG_ID = id }, commandType: CommandType.StoredProcedure, transaction: Transaction);
+                    }
+
+                    Transaction.Commit();
+                    return Request.CreateResponse(HttpStatusCode.OK, Messages.Inserted_Successfully("Hot Program"));
+                }
+                catch (Exception ex)
+                {
+                    Transaction.Rollback();
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
+                }
             }
         }
 
@@ -235,6 +291,25 @@ namespace ApplyForChina.Controllers
                     await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Delete_Program", Parameters, commandType: CommandType.StoredProcedure);
 
                 return Request.CreateResponse(HttpStatusCode.OK, Messages.Deleted_Successfully("Program"));
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
+            }
+        }
+
+        [HttpDelete]
+        public async Task<HttpResponseMessage> Delete_Hot_Program([FromUri] long PHOT_ID)
+        {
+            try
+            {
+                var Parameters = new DynamicParameters();
+                Parameters.Add("@PHOT_ID", PHOT_ID);
+
+                IEnumerable<int> p =
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Delete_Hot_Program", Parameters, commandType: CommandType.StoredProcedure);
+
+                return Request.CreateResponse(HttpStatusCode.OK, Messages.Deleted_Successfully("Hot Program"));
             }
             catch (Exception ex)
             {

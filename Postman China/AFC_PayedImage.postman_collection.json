@@ -1,0 +1,172 @@
+{
+	"info": {
+		"_postman_id": "fbd06247-c464-4067-89aa-0cba864e4b7a",
+		"name": "AFC_PayedImage",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26044109"
+	},
+	"item": [
+		{
+			"name": "Get_Payed_Images",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://chinaproject-001-site1.itempurl.com/api/PayedImage/Get_Payed_Images?Page_Number=1&Limit=5",
+					"protocol": "http",
+					"host": [
+						"chinaproject-001-site1",
+						"itempurl",
+						"com"
+					],
+					"path": [
+						"api",
+						"PayedImage",
+						"Get_Payed_Images"
+					],
+					"query": [
+						{
+							"key": "Page_Number",
+							"value": "1"
+						},
+						{
+							"key": "Limit",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Insert_Payed_Image",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"PIMG_Image\":\"image1\",\r\n    \"PIMG_PNL_ID\":1,\r\n    \"PIMG_ORD_ID\": 27\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "applywork-001-site1.atempurl.com/api/PayedImage/Insert_Payed_Image",
+					"host": [
+						"applywork-001-site1",
+						"atempurl",
+						"com"
+					],
+					"path": [
+						"api",
+						"PayedImage",
+						"Insert_Payed_Image"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update_PayedImage_Approved",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"PIMG_IsApproved\":0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://chinaproject-001-site1.itempurl.com/api/PayedImage/Update_PayedImage_Approved?PIMG_ID=21",
+					"protocol": "http",
+					"host": [
+						"chinaproject-001-site1",
+						"itempurl",
+						"com"
+					],
+					"path": [
+						"api",
+						"PayedImage",
+						"Update_PayedImage_Approved"
+					],
+					"query": [
+						{
+							"key": "PIMG_ID",
+							"value": "21"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update_Payed_Image",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"PIMG_Image\":\"imageeeeeeeeeeeeeeeeee\",\r\n    \"PIMG_PNL_ID\":1,\r\n    \"PIMG_ORD_ID\": 27\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "applywork-001-site1.atempurl.com/api/PayedImage/Update_Payed_Image?PIMG_ID=15",
+					"host": [
+						"applywork-001-site1",
+						"atempurl",
+						"com"
+					],
+					"path": [
+						"api",
+						"PayedImage",
+						"Update_Payed_Image"
+					],
+					"query": [
+						{
+							"key": "PIMG_ID",
+							"value": "15"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete_Payed_Image",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "applywork-001-site1.atempurl.com/api/PayedImage/Delete_Payed_Image?PIMG_ID=16",
+					"host": [
+						"applywork-001-site1",
+						"atempurl",
+						"com"
+					],
+					"path": [
+						"api",
+						"PayedImage",
+						"Delete_Payed_Image"
+					],
+					"query": [
+						{
+							"key": "PIMG_ID",
+							"value": "16"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

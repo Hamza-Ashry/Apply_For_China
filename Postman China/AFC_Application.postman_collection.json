@@ -1,0 +1,158 @@
+{
+	"info": {
+		"_postman_id": "a47528fd-8a64-44a5-b53f-cdbf5f41b11b",
+		"name": "AFC_Application",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26044109"
+	},
+	"item": [
+		{
+			"name": "Get_Order_Applications",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://chinaproject-001-site1.itempurl.com/api/Application/Get_Order_Applications?APP_ORD_ID=42",
+					"protocol": "http",
+					"host": [
+						"chinaproject-001-site1",
+						"itempurl",
+						"com"
+					],
+					"path": [
+						"api",
+						"Application",
+						"Get_Order_Applications"
+					],
+					"query": [
+						{
+							"key": "APP_ORD_ID",
+							"value": "42"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get_Application",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "applywork-001-site1.atempurl.com/api/Application/Get_Application?APP_ID=29",
+					"host": [
+						"applywork-001-site1",
+						"atempurl",
+						"com"
+					],
+					"path": [
+						"api",
+						"Application",
+						"Get_Application"
+					],
+					"query": [
+						{
+							"key": "APP_ID",
+							"value": "29"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Insert_Application",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"APP_PRG_ID\":10063,\r\n    \"APP_ORD_ID\":16\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "applywork-001-site1.atempurl.com/api/Application/Insert_Application",
+					"host": [
+						"applywork-001-site1",
+						"atempurl",
+						"com"
+					],
+					"path": [
+						"api",
+						"Application",
+						"Insert_Application"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update_Application",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"APP_PRG_ID\":10066,\r\n    \"APP_ORD_ID\":16\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "applywork-001-site1.atempurl.com/api/Application/Update_Application?APP_ID=33",
+					"host": [
+						"applywork-001-site1",
+						"atempurl",
+						"com"
+					],
+					"path": [
+						"api",
+						"Application",
+						"Update_Application"
+					],
+					"query": [
+						{
+							"key": "APP_ID",
+							"value": "33"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete_Application",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "applywork-001-site1.atempurl.com/api/Application/Delete_Application?APP_ID=33",
+					"host": [
+						"applywork-001-site1",
+						"atempurl",
+						"com"
+					],
+					"path": [
+						"api",
+						"Application",
+						"Delete_Application"
+					],
+					"query": [
+						{
+							"key": "APP_ID",
+							"value": "33"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

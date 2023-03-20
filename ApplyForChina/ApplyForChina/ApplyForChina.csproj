@@ -192,6 +192,7 @@
     <Compile Include="Models\Application.cs" />
     <Compile Include="Models\Application_File.cs" />
     <Compile Include="Models\FeedBack.cs" />
+    <Compile Include="Models\Hot_Program.cs" />
     <Compile Include="Models\Message.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\Payed_Image.cs" />
