@@ -19,6 +19,24 @@ namespace ApplyForChina.Controllers
     public class UniversityController : ApiController
     {
         [HttpGet]
+        public async Task<HttpResponseMessage> Get_Universities()
+        {
+            try
+            {
+                IEnumerable<University> unv =
+                    await SingletonSqlConnection.Instance.Connection.QueryAsync<University>("Get_Universities_Old_Vesion", commandType: CommandType.StoredProcedure);
+
+                if (unv.Count() == 0)
+                    return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
+                return Request.CreateResponse(HttpStatusCode.OK, unv);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
+            }
+        }
+
+        [HttpGet]
         public async Task<HttpResponseMessage> Get_All_Universities([FromUri] int Page_Number, [FromUri] int Limit)
         {
             try

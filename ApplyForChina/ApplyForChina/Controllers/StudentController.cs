@@ -61,27 +61,6 @@ namespace ApplyForChina.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<HttpResponseMessage> Get_Agent_Students_Total([FromUri] int STD_USR_ID)
-        {
-            try
-            {
-                var Parameters = new DynamicParameters();
-                Parameters.Add("@STD_USR_ID", STD_USR_ID);
-
-                IEnumerable<int> stu =
-                    await SingletonSqlConnection.Instance.Connection.QueryAsync<int>("Get_Agent_Students_Total", Parameters, commandType: CommandType.StoredProcedure);
-
-                if (stu.Count() == 0)
-                    return Request.CreateResponse(HttpStatusCode.Gone, Messages.Not_Found());
-                return Request.CreateResponse(HttpStatusCode.OK, stu.First());
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, Messages.Exception(ex));
-            }
-        }
-
         [HttpPost]
         public async Task<HttpResponseMessage> Insert_Student([FromBody] Student stu)
         {
