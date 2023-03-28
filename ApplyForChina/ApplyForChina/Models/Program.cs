@@ -22,8 +22,6 @@ namespace ApplyForChina.Models
 		public string PRG_Degree { get; set; }
 		public string PRG_Teaching_Languages { get; set; }
 		public string PRG_Field { get; set; }
-
-		[JsonConverter(typeof(CustomDateConverter))]
 		public DateTime PRG_Expired_date { get; set; }
 		public float PRG_Duration { get; set; }
 		public string PRG_Policy { get; set; }
